@@ -6,7 +6,7 @@
 
 ## 启动
 
-先启动 Docker Desktop。Windows 需使用 **Linux containers** 模式。首个镜像版本发布后，在本目录运行：
+先启动 Docker。Mac/Windows 使用 Docker Desktop，Windows 需切换到 **Linux containers** 模式。在本目录运行：
 
 ```sh
 docker compose up -d
@@ -14,7 +14,7 @@ docker compose ps
 docker compose exec -T feilian clash-config
 ```
 
-Compose 默认从 GHCR 拉取 `ghcr.io/bt99bt/feilian-docker:latest`，不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.0`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。仓库目前为私有仓库，首次发布的包也按私有包处理；拉取前需先用具有 `read:packages` 权限的 GitHub classic PAT 执行 `docker login ghcr.io -u bt99bt`。如果以后将包设为公开，则可匿名拉取。首版发布前 GHCR 中没有镜像，启动命令会失败。
+Compose 默认从公开的 GHCR 包拉取 `ghcr.io/bt99bt/feilian-docker:latest`，无需登录，也不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.0`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。
 
 容器启动日志会打印可复制的 Clash/Mihomo 配置。第三条命令可随时单独输出配置；将 `proxies` 和 `rules` 下的条目分别合并到现有配置，规则放在 `MATCH` 等兜底规则之前。SOCKS5 只监听宿主机 `127.0.0.1:1080`，仅支持 TCP CONNECT。
 
@@ -26,15 +26,21 @@ Mac/Linux：
 
 ```sh
 curl --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://odin.botaneeai.com/
+curl --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://www.botaneeai.com/
 ```
 
 Windows PowerShell：
 
 ```powershell
 curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://odin.botaneeai.com/
+curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://www.botaneeai.com/
 ```
 
-`--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。其他企业域名需要自行添加 Clash 规则。
+`--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。Clash 示例规则覆盖 `botaneeai.com` 及其子域名；访问网站请使用 `https://www.botaneeai.com/`，裸域名 `botaneeai.com` 当前没有 DNS 记录。其他企业域名需要自行添加 Clash 规则。
+
+## 分享给别人
+
+分享本仓库链接即可；对方只需下载 `compose.yaml`，运行 `docker compose up -d`，再按上文打开飞连操作页面完成自己的企业激活和扫码登录。Docker 的 Linux 环境必须提供 `/dev/net/tun`。登录数据保存在对方自己的 Docker 卷中，不在镜像或 Compose 文件里。
 
 ## 排查与停止
 
@@ -60,4 +66,4 @@ gh run list --workflow container.yml --limit 5
 docker buildx imagetools inspect ghcr.io/bt99bt/feilian-docker:0.1.0
 ```
 
-后续发布递增本仓库版本号，不要将新内容重新推送到已有版本标签。包的可见性在 GitHub 的 Packages 设置中管理；私有包的拉取者需要包读取权限。若首次发布提示无权写入已有同名包，需要在该包的 **Manage Actions access** 中授予此仓库写入权限。
+后续发布递增本仓库版本号，不要将新内容重新推送到已有版本标签。镜像包公开供匿名拉取；GitHub Actions 仍用仓库的 `GITHUB_TOKEN` 发布新版本。

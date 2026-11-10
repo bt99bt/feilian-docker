@@ -9,5 +9,5 @@ proxies:
     udp: false
 
 rules:
-  - DOMAIN,odin.botaneeai.com,FEILIAN
+  - DOMAIN-SUFFIX,botaneeai.com,FEILIAN
 EOF
