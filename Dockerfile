@@ -6,7 +6,8 @@ LABEL org.opencontainers.image.source="https://github.com/bt99bt/feilian-docker"
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:0 \
     HOME=/home/feilian \
-    XDG_RUNTIME_DIR=/tmp/feilian-runtime
+    XDG_RUNTIME_DIR=/tmp/feilian-runtime \
+    VPN_DNS_SERVER=10.12.41.241
 
 ARG APT_MIRROR=http://deb.debian.org/debian
 ARG APT_SECURITY_MIRROR=http://deb.debian.org/debian-security
