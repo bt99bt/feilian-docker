@@ -36,7 +36,7 @@ curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://odin.botan
 curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://www.botaneeai.com/
 ```
 
-`--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。Clash 示例规则覆盖 `botaneeai.com` 及其子域名；访问网站请使用 `https://www.botaneeai.com/`，裸域名 `botaneeai.com` 当前没有 DNS 记录。其他企业域名需要自行添加 Clash 规则。
+`--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。镜像中的 Clash 规则以 `docker compose exec -T feilian clash-config` 的输出为准；已发布的 `0.1.0` 镜像只包含 `odin.botaneeai.com` 规则，仓库当前规则覆盖 `botaneeai.com` 及其子域名。访问网站请使用 `https://www.botaneeai.com/`，裸域名 `botaneeai.com` 当前没有 DNS 记录。其他企业域名需要自行添加 Clash 规则。
 
 ## 分享给别人
 
@@ -57,13 +57,13 @@ docker compose down
 
 [Container 工作流](.github/workflows/container.yml) 在 PR 和 `main` 推送时检查脚本语法并构建 `linux/amd64`、`linux/arm64`，不推送镜像。只有推送 `vMAJOR.MINOR.PATCH` 标签时才使用仓库的 `GITHUB_TOKEN` 发布到 GHCR，无需另存发布密钥。构建时从飞连官网下载 Linux v3.2.16 安装包并校验 SHA-256；仓库不包含飞连安装包、已构建镜像或登录状态。工作流生成 `MAJOR.MINOR.PATCH`、`sha-<短提交号>` 和 `latest` 标签，附带 SBOM、构建来源信息，并检查发布清单包含两个架构。镜像版本表示本仓库的封装版本，飞连客户端版本见 Dockerfile；二者独立更新。
 
-首次发布示例：先把变更合入 `main` 并确认 Container 检查通过，再在该提交上执行：
+后续发布示例：先把变更合入 `main` 并确认 Container 检查通过，再在该提交上执行：
 
 ```sh
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 gh run list --workflow container.yml --limit 5
-docker buildx imagetools inspect ghcr.io/bt99bt/feilian-docker:0.1.0
+docker buildx imagetools inspect ghcr.io/bt99bt/feilian-docker:0.1.1
 ```
 
 后续发布递增本仓库版本号，不要将新内容重新推送到已有版本标签。镜像包公开供匿名拉取；GitHub Actions 仍用仓库的 `GITHUB_TOKEN` 发布新版本。
