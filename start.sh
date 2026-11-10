@@ -13,6 +13,7 @@ mkdir -p /run/dbus /var/run/NetworkManager /tmp/feilian-runtime
 rm -f /run/dbus/pid /run/NetworkManager/NetworkManager.pid /tmp/.X0-lock /tmp/.X11-unix/X0
 chown feilian:feilian /tmp/feilian-runtime /home/feilian
 chmod 700 /tmp/feilian-runtime
+/usr/local/bin/persist-state.sh
 
 dbus-daemon --system --fork
 NetworkManager --no-daemon &
