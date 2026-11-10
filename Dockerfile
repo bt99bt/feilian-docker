@@ -1,6 +1,8 @@
 ARG BASE_IMAGE=debian:12-slim
 FROM ${BASE_IMAGE}
 
+LABEL org.opencontainers.image.source="https://github.com/bt99bt/feilian-docker"
+
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:0 \
     HOME=/home/feilian \

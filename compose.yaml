@@ -1,11 +1,7 @@
 services:
   feilian:
-    build:
-      context: .
-      args:
-        APT_MIRROR: ${APT_MIRROR:-http://deb.debian.org/debian}
-        APT_SECURITY_MIRROR: ${APT_SECURITY_MIRROR:-http://deb.debian.org/debian-security}
-    image: local/feilian-socks:3.2.16
+    image: ${FEILIAN_IMAGE:-ghcr.io/bt99bt/feilian-docker:latest}
+    pull_policy: always
     cap_add:
       - NET_ADMIN
     devices:
