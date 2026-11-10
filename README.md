@@ -67,7 +67,7 @@ curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://www.botane
 
 ## 分享给别人
 
-发布 `0.1.1` 并确认 `latest` 指向新镜像后，分享本仓库链接即可；对方只需下载 `compose.yaml`，运行 `docker compose up -d`，再按上文打开飞连操作页面完成自己的企业激活和扫码登录。Docker 的 Linux 环境必须提供 `/dev/net/tun`。登录数据保存在对方自己的 Docker 卷中，不在镜像或 Compose 文件里。
+当前已发布 `0.1.2`，`latest` 指向此版本。分享本仓库链接即可；对方只需下载 `compose.yaml`，运行 `docker compose up -d`，再按上文打开飞连操作页面完成自己的企业激活和扫码登录。Docker 的 Linux 环境必须提供 `/dev/net/tun`。登录数据保存在对方自己的 Docker 卷中，不在镜像或 Compose 文件里。
 
 ## 排查与停止
 
