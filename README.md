@@ -14,7 +14,7 @@ docker compose ps
 docker compose exec -T feilian clash-config
 ```
 
-Compose 默认从公开的 GHCR 包拉取 `ghcr.io/bt99bt/feilian-docker:latest`，无需登录，也不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.0`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。
+Compose 默认从公开的 GHCR 包拉取 `ghcr.io/bt99bt/feilian-docker:latest`，无需登录，也不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.1`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。
 
 容器启动日志会打印 Clash/Mihomo 配置；第三条命令可随时单独输出。SOCKS5 只监听宿主机 `127.0.0.1:1080`，仅支持 TCP CONNECT。
 
@@ -63,9 +63,11 @@ curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://www.botane
 
 `--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。已发布的 `0.1.0` 镜像内置的 `clash-config` 仍只包含 `odin.botaneeai.com` 规则；使用该版本时，可按上节手动合并完整配置。访问网站请使用 `https://www.botaneeai.com/`，裸域名 `botaneeai.com` 当前没有 DNS 记录。其他企业域名需要自行添加 Clash 规则。
 
+如果飞连容器把企业域名解析为 `198.18.x.x` 假 IP，SOCKS5 无法通过 VPN 连接该地址。从 `0.1.1` 起，镜像和 Compose 默认使用贝泰妮 VPN 的企业 DNS `10.12.41.241`，并且仅在 DNS 地址经 VPN 网卡可达时切换；VPN 断开后恢复原解析配置。其他企业或 DNS 地址变化时，在本地 `.env` 设置 `VPN_DNS_SERVER=实际企业内网 DNS 地址` 后重新创建容器。已发布的 `0.1.0` 镜像没有此修复。
+
 ## 分享给别人
 
-分享本仓库链接即可；对方只需下载 `compose.yaml`，运行 `docker compose up -d`，再按上文打开飞连操作页面完成自己的企业激活和扫码登录。Docker 的 Linux 环境必须提供 `/dev/net/tun`。登录数据保存在对方自己的 Docker 卷中，不在镜像或 Compose 文件里。
+发布 `0.1.1` 并确认 `latest` 指向新镜像后，分享本仓库链接即可；对方只需下载 `compose.yaml`，运行 `docker compose up -d`，再按上文打开飞连操作页面完成自己的企业激活和扫码登录。Docker 的 Linux 环境必须提供 `/dev/net/tun`。登录数据保存在对方自己的 Docker 卷中，不在镜像或 Compose 文件里。
 
 ## 排查与停止
 

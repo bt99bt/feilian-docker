@@ -11,6 +11,7 @@ services:
       - "127.0.0.1:1080:1080"
     environment:
       - VPN_INTERFACE=${VPN_INTERFACE:-}
+      - VPN_DNS_SERVER=${VPN_DNS_SERVER:-10.12.41.241}
     volumes:
       - feilian-home-v3216:/home/feilian
     restart: unless-stopped
