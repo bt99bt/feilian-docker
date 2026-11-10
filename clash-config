@@ -1,0 +1,13 @@
+#!/bin/sh
+cat <<'EOF'
+# 飞连：把代理和规则分别合并到现有列表，规则放在 MATCH 等兜底规则之前。
+proxies:
+  - name: FEILIAN
+    type: socks5
+    server: 127.0.0.1
+    port: 1080
+    udp: false
+
+rules:
+  - DOMAIN,odin.botaneeai.com,FEILIAN
+EOF

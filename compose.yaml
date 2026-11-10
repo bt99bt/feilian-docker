@@ -1,0 +1,23 @@
+services:
+  feilian:
+    build:
+      context: .
+      args:
+        APT_MIRROR: ${APT_MIRROR:-http://deb.debian.org/debian}
+        APT_SECURITY_MIRROR: ${APT_SECURITY_MIRROR:-http://deb.debian.org/debian-security}
+    image: local/feilian-socks:3.2.16
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - "127.0.0.1:6080:6080"
+      - "127.0.0.1:1080:1080"
+    environment:
+      - VPN_INTERFACE=${VPN_INTERFACE:-}
+    volumes:
+      - feilian-home-v3216:/home/feilian
+    restart: unless-stopped
+
+volumes:
+  feilian-home-v3216:

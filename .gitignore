@@ -1,0 +1,11 @@
+# Local image exports and installation packages
+*.tar
+*.tar.gz
+*.zip
+*.deb
+SHA256SUMS
+
+# Local settings and diagnostics
+.env
+*.log
+.DS_Store
