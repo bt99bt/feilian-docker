@@ -16,9 +16,34 @@ docker compose exec -T feilian clash-config
 
 Compose 默认从公开的 GHCR 包拉取 `ghcr.io/bt99bt/feilian-docker:latest`，无需登录，也不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.0`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。
 
-容器启动日志会打印可复制的 Clash/Mihomo 配置。第三条命令可随时单独输出配置；将 `proxies` 和 `rules` 下的条目分别合并到现有配置，规则放在 `MATCH` 等兜底规则之前。SOCKS5 只监听宿主机 `127.0.0.1:1080`，仅支持 TCP CONNECT。
+容器启动日志会打印 Clash/Mihomo 配置；第三条命令可随时单独输出。SOCKS5 只监听宿主机 `127.0.0.1:1080`，仅支持 TCP CONNECT。
 
 打开 [飞连操作页面](http://127.0.0.1:6080/vnc.html?autoconnect=1&resize=scale)，完成企业激活、扫码登录并连接 VPN。VPN 网卡及路由就绪后，SOCKS5 才会启动。登录数据保存在 Docker 卷中；容器重启后若会话过期，需要重新登录。
+
+## 配置 Clash/Mihomo
+
+将以下节点、策略组和规则分别合并到现有配置的 `proxies`、`proxy-groups` 和 `rules` 列表，不要重复创建同名顶层字段。分流规则要放在 `MATCH` 等兜底规则之前：
+
+```yaml
+proxies:
+  - name: FEILIAN
+    type: socks5
+    server: 127.0.0.1
+    port: 1080
+    udp: false
+
+proxy-groups:
+  - name: 飞连专用
+    type: select
+    proxies:
+      - FEILIAN
+      - DIRECT
+
+rules:
+  - DOMAIN-SUFFIX,botaneeai.com,飞连专用
+```
+
+Clash/Mihomo 保持**规则模式**，并在客户端启用 **TUN 模式**，让需要分流的应用流量进入规则处理。`飞连专用` 默认选择 `FEILIAN`；手动切到 `DIRECT` 时，这条规则不再走飞连 VPN。TUN 不会让此 SOCKS5 节点支持 UDP，飞连线路仍只转发 TCP。Clash/Mihomo 与 Docker 需运行在同一台机器上，节点中的 `127.0.0.1` 才能指向宿主机端口。
 
 ## 验证线路
 
@@ -36,7 +61,7 @@ curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://odin.botan
 curl.exe --socks5-hostname 127.0.0.1:1080 -I -L --max-time 15 https://www.botaneeai.com/
 ```
 
-`--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。镜像中的 Clash 规则以 `docker compose exec -T feilian clash-config` 的输出为准；已发布的 `0.1.0` 镜像只包含 `odin.botaneeai.com` 规则，仓库当前规则覆盖 `botaneeai.com` 及其子域名。访问网站请使用 `https://www.botaneeai.com/`，裸域名 `botaneeai.com` 当前没有 DNS 记录。其他企业域名需要自行添加 Clash 规则。
+`--socks5-hostname` 让代理端解析域名。连接正常时预期最终返回 HTTP 200。已发布的 `0.1.0` 镜像内置的 `clash-config` 仍只包含 `odin.botaneeai.com` 规则；使用该版本时，可按上节手动合并完整配置。访问网站请使用 `https://www.botaneeai.com/`，裸域名 `botaneeai.com` 当前没有 DNS 记录。其他企业域名需要自行添加 Clash 规则。
 
 ## 分享给别人
 

@@ -1,6 +1,7 @@
 #!/bin/sh
 cat <<'EOF'
-# 飞连：把代理和规则分别合并到现有列表，规则放在 MATCH 等兜底规则之前。
+# 飞连：把节点、策略组和规则分别合并到现有列表，规则放在 MATCH 等兜底规则之前。
+# Clash/Mihomo 使用规则模式，并在客户端启用 TUN 模式。
 proxies:
   - name: FEILIAN
     type: socks5
@@ -8,6 +9,13 @@ proxies:
     port: 1080
     udp: false
 
+proxy-groups:
+  - name: 飞连专用
+    type: select
+    proxies:
+      - FEILIAN
+      - DIRECT
+
 rules:
-  - DOMAIN-SUFFIX,botaneeai.com,FEILIAN
+  - DOMAIN-SUFFIX,botaneeai.com,飞连专用
 EOF
