@@ -45,8 +45,8 @@ RUN useradd --system --no-create-home --shell /usr/sbin/nologin socksproxy
 # Docker owns eth0. Let NetworkManager manage VPN interfaces without changing it.
 RUN printf '[keyfile]\nunmanaged-devices=interface-name:eth0\n' > /etc/NetworkManager/conf.d/99-container.conf
 
-COPY start.sh socks-monitor.sh clash-config /usr/local/bin/
-RUN chmod +x /usr/local/bin/start.sh /usr/local/bin/socks-monitor.sh /usr/local/bin/clash-config
+COPY start.sh socks-monitor.sh persist-state.sh clash-config /usr/local/bin/
+RUN chmod +x /usr/local/bin/start.sh /usr/local/bin/socks-monitor.sh /usr/local/bin/persist-state.sh /usr/local/bin/clash-config
 
 EXPOSE 6080 1080
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/start.sh"]

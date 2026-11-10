@@ -14,11 +14,11 @@ docker compose ps
 docker compose exec -T feilian clash-config
 ```
 
-Compose 默认从公开的 GHCR 包拉取 `ghcr.io/bt99bt/feilian-docker:latest`，无需登录，也不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.1`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。
+Compose 默认从公开的 GHCR 包拉取 `ghcr.io/bt99bt/feilian-docker:latest`，无需登录，也不会在本地构建。建议在本地 `.env` 中设置 `FEILIAN_IMAGE=ghcr.io/bt99bt/feilian-docker:0.1.2`，由自己决定何时升级；也可填 `@sha256:...` 固定到发布清单的摘要。`docker compose up -d` 每次都会检查并拉取所选镜像。
 
 容器启动日志会打印 Clash/Mihomo 配置；第三条命令可随时单独输出。SOCKS5 只监听宿主机 `127.0.0.1:1080`，仅支持 TCP CONNECT。
 
-打开 [飞连操作页面](http://127.0.0.1:6080/vnc.html?autoconnect=1&resize=scale)，完成企业激活、扫码登录并连接 VPN。VPN 网卡及路由就绪后，SOCKS5 才会启动。登录数据保存在 Docker 卷中；容器重启后若会话过期，需要重新登录。
+打开 [飞连操作页面](http://127.0.0.1:6080/vnc.html?autoconnect=1&resize=scale)，完成企业激活、扫码登录并连接 VPN。VPN 网卡及路由就绪后，SOCKS5 才会启动。从 `0.1.2` 起，前端登录数据、后端令牌和设备配置都保存在 Docker 卷中；普通重启或重建容器不会因文件丢失而要求重新登录。若企业服务端主动使会话过期，仍需重新登录。卷中含有登录凭据，不要分享或导出给他人。
 
 ## 配置 Clash/Mihomo
 
@@ -78,7 +78,7 @@ docker compose exec -T feilian ip -br addr
 docker compose down
 ```
 
-`docker compose down` 保留登录数据卷；`docker compose down -v` 会删除该卷。若容器没有 `/dev/net/tun` 或权限不足，Docker 的 Linux 环境无法提供 VPN 所需 TUN 设备。若自动识别 VPN 网卡出错，可在本地 `.env` 中设置 `VPN_INTERFACE=实际网卡名`，再重建容器；不要设为 `eth0`。端口只绑定本机回环地址，其他设备无法直接使用。
+`docker compose down` 保留登录数据卷；`docker compose down -v` 会删除该卷。已登录的 `0.1.1` 容器升级到 `0.1.2` 时，旧版存放在容器写入层的后端状态无法自动迁入卷，可能需要最后重新登录一次；以后重建会保留状态。若容器没有 `/dev/net/tun` 或权限不足，Docker 的 Linux 环境无法提供 VPN 所需 TUN 设备。若自动识别 VPN 网卡出错，可在本地 `.env` 中设置 `VPN_INTERFACE=实际网卡名`，再重建容器；不要设为 `eth0`。端口只绑定本机回环地址，其他设备无法直接使用。
 
 ## 镜像发布
 
